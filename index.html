@@ -33,6 +33,9 @@
 <body>
 
 <div class="drawing">
+  <!-- Элемент выбора цвета -->
+  <label for="colorPicker">Выберите цвет:</label>
+  <input type="color" id="colorPicker" value="#000000">
   <h1>Очко Миши 1.0</h1>
   <canvas id="drawingCanvas"  ></canvas>
 
@@ -169,10 +172,11 @@
       const rect = canvas.getBoundingClientRect();
       const x = Math.floor((event.clientX - rect.left) / cellSize);
       const y = Math.floor((event.clientY - rect.top) / (cellSize * 2));
+      delete rect;
       const a = getA(x, y);
       if(a > -1) {
-        sed[a] = "green";
-        fill()
+        sed[a] = colorPicker.value;
+        fill();
       }
       
       //ctx.fillStyle = 'grey'; // Цвет рисования
