@@ -6,8 +6,9 @@
   <title>Очко Миши</title>
   <style>
     canvas {
-      border: 1px solid #fff;
+      border: 10px solid #afafaf;
       cursor: crosshair;
+      background: #afafaf;
     }
     body {
       font-family: Arial, sans-serif;
@@ -16,98 +17,43 @@
       align-items: center;
       height: 100vh;
       text-align: center;
+      background: #3f3f3f;
+      color: #ddd;
     }
     form {
-      max-width: 400px;
+      padding-bottom: 100px;
     }
     .form-group {
       margin-bottom: 15px;
-    }
-    .form-menu {
-      display: flex;
-      justify-content: center;
-      align-items: center;
     }
   </style>
 </head>
 <body>
 
 <div class="drawing">
-  <!-- Элемент выбора цвета -->
-  <label for="colorPicker">Выберите цвет:</label>
-  <input type="color" id="colorPicker" value="#000000">
   <h1>Очко Миши 1.0</h1>
   <canvas id="drawingCanvas"  ></canvas>
 
   <script>
     const canvas = document.getElementById('drawingCanvas');
-    const center = document.getElementById('center');
     const ctx = canvas.getContext('2d');
     const rows = 10;
     const cols = 27;
-
-    function resizeCanvas() {
-        // Устанавливаем ширину канваса на 100% ширины окна
-        canvas.width = window.innerWidth * 0.9; // 90% от ширины окна
-        canvas.height = (canvas.width / cols) * rows; // Высота пропорциональна количеству строк
-        cellSize = Math.floor(canvas.width/27); // Размер ячейки
-        //drawGrid();
-    }
     
-    let cellSize = Math.floor(canvas.width/27); // Размер ячейки
+    let cellSize = Math.floor(canvas.width/27)
     let sed = [];
-    
     for (let i = 0; i < 122; i++) {
       sed[i] = "black";
     }
     
-    /*
-    // Функция для отрисовки сетки
-    function drawGrid() {
-      for (let x = 0; x <= 27; x++) {
-        switch(x){
-          case 0:
-          case 1:
-          case 27:
-          case 26:
-            ctx.moveTo(x*cellSize, 2*cellSize);
-            ctx.lineTo(x*cellSize, 8*cellSize);
-            break;
-          case 12:
-          case 13:
-          case 14:
-          case 15:
-            ctx.moveTo(x*cellSize, 0);
-            ctx.lineTo(x*cellSize, 8*cellSize);
-            break;
-          default:
-            ctx.moveTo(x*cellSize, 0);
-            ctx.lineTo(x*cellSize, canvas.height*2);
-        }
-      }
-      for (let y = 0; y < 6; y++) {
-        switch(y){
-          case 0:
-            ctx.moveTo(2*cellSize, 0);
-            ctx.lineTo(25*cellSize, 0);
-            break;
-          case 5:
-            ctx.moveTo(2*cellSize, 2*y*cellSize);
-            ctx.lineTo(11*cellSize, 2*y*cellSize);
-            ctx.moveTo(16*cellSize, 2*y*cellSize);
-            ctx.lineTo(25*cellSize, 2*y*cellSize);
-            break;
-          default:
-            ctx.moveTo(0, 2*y*cellSize);
-            ctx.lineTo(27*cellSize, 2*y*cellSize);
-        }
-        //ctx.moveTo(0, y*2);
-        //ctx.lineTo(canvas.width, y*2);
-      }
-      ctx.strokeStyle = '#ffffff';
-      ctx.stroke();
+    //функция для установления размеров поля рисования
+    function resizeCanvas() {
+        canvas.width = Math.floor((window.innerWidth * 0.9)/cols)*cols
+        canvas.height = (canvas.width / cols) * rows
+        cellSize = Math.floor(canvas.width/27)
     }
-    */
+    
+    //функция преобразования точки на ленте в xy
     function getXY(a) {
       let b = [0, 0];
       if(a >= 0 && a < 23) {
@@ -125,6 +71,8 @@
       }
       return b;
     }
+    
+    //функция преобразования xy в точку на ленте
     function getA(x, y) {
       switch(y){
         case 0:
@@ -151,7 +99,7 @@
       return -1;
     }
     
-    // Функция для рисования
+    // Функция для отображения нарисованного
     function fill() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       for (let i = 0; i < 122; i++) {
@@ -168,77 +116,69 @@
     }
     
     // Функция для рисования
-    function draw(event) {
+    function draw(px, py) {
       const rect = canvas.getBoundingClientRect();
-      const x = Math.floor((event.clientX - rect.left) / cellSize);
-      const y = Math.floor((event.clientY - rect.top) / (cellSize * 2));
+      const x = Math.floor((px - rect.left - 7.5) / cellSize);
+      const y = Math.floor((py - rect.top - 7.5) / (cellSize * 2));
       delete rect;
       const a = getA(x, y);
       if(a > -1) {
         sed[a] = colorPicker.value;
         fill();
       }
-      
-      //ctx.fillStyle = 'grey'; // Цвет рисования
-      //ctx.fillRect(x, y*2, cellSize, cellSize*2);
     }
-
-    // Обработчик события мыши
+    
+    //функции подготовки рисования
+    function drawTouch(event) {
+      draw(event.touches[0].clientX, event.touches[0].clientY)
+    }
+    function drawMouse(event) {
+      draw(event.clientX, event.clientY)
+    }
+    
     canvas.addEventListener('mousedown', (event) => {
-      draw(event);
-      canvas.addEventListener('mousemove', draw);
+      drawMouse(event);
+      canvas.addEventListener('mousemove', drawMouse);
     });
 
     canvas.addEventListener('mouseup', () => {
-      canvas.removeEventListener('mousemove', draw);
+      canvas.removeEventListener('mousemove', drawMouse);
     });
+    
+    canvas.addEventListener("touchmove", (event) => {
+      event.preventDefault();
+      drawTouch(event);
+    });
+    //canvas.addEventListener('mousemove', draw);
     // Изменение размера канваса при загрузке и изменении размера окна
-    //window.addEventListener('resize', resizeCanvas);
     resizeCanvas(); // Инициализация при загрузке
-    // Отрисовка сетки при загрузке
     fill();
-  </script>
+  </script><br>
+  <!-- Элемент выбора цвета -->
+  <label for="colorPicker">Выберите цвет:</label>
+  <input type="color" id="colorPicker" value="#00ffff"><br><br>
 </div>
 
-
-<form action="#" method="post">
-  <div class="form-menu">
+<div class="menu-save">
+  <h2>Сохранение</h2>
+  <form action="#" method="post">
     <div class="form-group">
       <label for="name">Имя:</label>
       <input type="text" id="name" name="name" required>
     </div>
 
     <div class="form-group">
-      <label>Пол:</label><br>
-      <input type="radio" id="male" name="gender" value="male">
-      <label for="male">Мужской</label><br>
-      <input type="radio" id="female" name="gender" value="female">
-      <label for="female">Женский</label>
-    </div>
-  </div>
-  <div class="form-menu">
-    <div class="form-group">
-      <label>Интересы:</label><br>
-      <input type="checkbox" id="sports" name="interests" value="sports">
-      <label for="sports">Спорт</label><br>
-      <input type="checkbox" id="music" name="interests" value="music">
-      <label for="music">Музыка</label><br>
-      <input type="checkbox" id="travel" name="interests" value="travel">
-      <label for="travel">Путешествия</label>
-    </div>
-
-    <div class="form-group">
-      <label for="country">Страна:</label>
-      <select id="country" name="country">
-        <option value="russia">Россия</option>
-        <option value="usa">США</option>
-        <option value="germany">Германия</option>
-        <option value="france">Франция</option>
+      <label for="place">Место:</label>
+      <select id="place" name="place">
+        <option value="brauser">Браузер</option>
+        <option value="esp">ESP-8266</option>
+        <option value="arduino">Arduino</option>
       </select>
     </div>
-  </div>
-  <button type="submit">Отправить</button>
-</form>
+    <button type="submit">Сохранить</button>
+  </form>
+</div>
+
 </body>
 </html>
 
