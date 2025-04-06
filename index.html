@@ -166,8 +166,9 @@
     
     // Функция для рисования
     function draw(event) {
-      const x = Math.floor((event.clientX - cellSize*1.5) / cellSize);
-      const y = Math.floor((event.clientY - cellSize) / (cellSize * 2));
+      const rect = canvas.getBoundingClientRect();
+      const x = Math.floor((event.clientX - rect.left) / cellSize);
+      const y = Math.floor((event.clientY - rect.top) / (cellSize * 2));
       const a = getA(x, y);
       if(a > -1) {
         sed[a] = "green";
