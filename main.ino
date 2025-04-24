@@ -5,6 +5,8 @@ byte baza = 0;     // изменение оттенка LED
 byte speed = 30;
 uint16_t ibyte = 0;
 
+uint8_t selectOperation = 0;
+
 #define NUM_LEDS 22
 #define PIN 3
 //CRGB leds[NUM_LEDS];
@@ -32,13 +34,38 @@ uint32_t base64(char x)
   return 0;
 }
 
-void getByte(char a) {
-  if(ibyte == 0){
-    speed = a;
-  }
-  ibyte++;
-  Serial.println((uint8_t)a);
+void loadImage(){
+  
 }
+void loadAnimation(){
+  
+}
+void loadSettings(){
+  
+}
+
+void operation(char a) {
+  if(ibyte == 0){
+    selectOperation = a;
+  }
+  switch(){
+    case 1:
+      loadImage();
+      break;
+    case 2:
+      loadAnimation();
+      break;
+    case 3:
+      loadSettings();
+      break;
+    default:
+      Serial.print("Досвидания\n");
+  }
+  
+  ibyte++;
+  //Serial.println((uint8_t)a);
+}
+
 void uart() {
   char s = ' ';
   uint8_t n = 0;
@@ -49,16 +76,16 @@ void uart() {
       if(s == '='){
         switch(n){
           case 1:
-            getByte((three_byte>>16)%256); //third
+            operation((three_byte>>16)%256); //third
             break;
           case 2:
-            getByte((three_byte>>16)%256); //third
-            getByte((three_byte>>8)%256); //second
+            operation((three_byte>>16)%256); //third
+            operation((three_byte>>8)%256); //second
             break;
           case 3:
-            getByte((three_byte>>16)%256); //third
-            getByte((three_byte>>8)%256); //second
-            getByte(three_byte%256); //first
+            operation((three_byte>>16)%256); //third
+            operation((three_byte>>8)%256); //second
+            operation(three_byte%256); //first
             break;
         }
         ibyte = 0;
@@ -84,9 +111,9 @@ void uart() {
         default:
           n = 0;
           //Serial.println(three_byte);
-          getByte((three_byte>>16)%256); //first
-          getByte((three_byte>>8)%256); //second
-          getByte(three_byte%256); //third
+          operation((three_byte>>16)%256); //first
+          operation((three_byte>>8)%256); //second
+          operation(three_byte%256); //third
           three_byte = 0;
       }
     }
