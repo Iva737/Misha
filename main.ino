@@ -6,6 +6,8 @@ byte speed = 30;
 uint16_t ibyte = 0;
 
 uint8_t selectOperation = 0;
+uint8_t numColor = 0;
+CRGB colors[];
 
 #define NUM_LEDS 22
 #define PIN 3
@@ -34,13 +36,17 @@ uint32_t base64(char x)
   return 0;
 }
 
-void loadImage(){
+void loadImage(uint8_t a){
+  if(ibyte == 1){
+    numColor = a;
+  } else if(ibyte-1 <= 3*numColor){
+    
+  }
+}
+void loadAnimation(uint8_t a){
   
 }
-void loadAnimation(){
-  
-}
-void loadSettings(){
+void loadSettings(uint8_t a){
   
 }
 
@@ -50,13 +56,13 @@ void operation(char a) {
   }
   switch(){
     case 1:
-      loadImage();
+      loadImage((uint8_t)a);
       break;
     case 2:
-      loadAnimation();
+      loadAnimation((uint8_t)a);
       break;
     case 3:
-      loadSettings();
+      loadSettings((uint8_t)a);
       break;
     default:
       Serial.print("Досвидания\n");
