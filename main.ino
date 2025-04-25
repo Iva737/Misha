@@ -39,6 +39,7 @@ uint32_t base64(char x)
 void loadImage(uint8_t a){
   if(ibyte == 1){
     numColor = a;
+    ptrColors = new CRGB[numColor];
   } else if(ibyte-1 <= 3*numColor){
     *(ptrColors+(ibyte-1)/3)[(ibyte-1)%3] = a;
   } else if(ibyte-1-3*numColor <= 
