@@ -7,7 +7,7 @@ uint16_t ibyte = 0;
 
 uint8_t selectOperation = 0;
 uint8_t numColor = 0;
-CRGB colors[];
+CRGB* ptrColors;
 
 #define NUM_LEDS 22
 #define PIN 3
@@ -40,7 +40,7 @@ void loadImage(uint8_t a){
   if(ibyte == 1){
     numColor = a;
   } else if(ibyte-1 <= 3*numColor){
-    
+    *(ptrColors+(ibyte-1)/3)
   }
 }
 void loadAnimation(uint8_t a){
@@ -54,7 +54,7 @@ void operation(char a) {
   if(ibyte == 0){
     selectOperation = a;
   }
-  switch(){
+  switch(selectOperation){
     case 1:
       loadImage((uint8_t)a);
       break;
