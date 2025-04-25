@@ -40,8 +40,8 @@ void loadImage(uint8_t a){
   if(ibyte == 1){
     numColor = a;
   } else if(ibyte-1 <= 3*numColor){
-    *(ptrColors+(ibyte-1)/3)
-  }
+    *(ptrColors+(ibyte-1)/3)[(ibyte-1)%3] = a;
+  } else if(ibyte-1-3*numColor <= 
 }
 void loadAnimation(uint8_t a){
   
